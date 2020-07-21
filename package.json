@@ -26,8 +26,10 @@
   "author": "mjcheetham",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.2.0",
-    "@actions/github": "^2.1.1"
+    "@actions/core": "^1.9.0",
+    "@actions/github": "^2.1.1",
+    "@types/request": "^2.48.5",
+    "request": "^2.88.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.23",
