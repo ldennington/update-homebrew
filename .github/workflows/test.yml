@@ -15,5 +15,7 @@ jobs:
         branch: test
         name: git-credential-manager-core
         type: cask
-        releaseAssets: [ gcm-osx-x64-(.*)\.pkg, gcm-osx-arm64-(.*)\.pkg ]
+        releaseAssets: |
+          - gcm-osx-x64-(.*)\.pkg
+          - gcm-osx-arm64-(.*)\.pkg
         alwaysUsePullRequest: true
