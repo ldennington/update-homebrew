@@ -5,6 +5,7 @@ on: # rebuild any PRs and main branch changes
     branches:
       - master
       - 'releases/*'
+      - test-workflows
 
 jobs:
   build: # make sure build/ci work properly
@@ -23,12 +24,13 @@ jobs:
     - name: Update test Formula
       uses: ./
       with:
-        token: ${{secrets.COMMIT_TOKEN}}
+        token: ${{ secrets.COMMIT_TOKEN }}
         tap: mjcheetham/tap
         branch: test
         name: test-formula
         version: 2.3.4.${{ steps.random.outputs.random }}
         sha256: blahblahblah${{ steps.random.outputs.random }}
+        alwaysUsePullRequest: true
         message: |
           {{name}} ({{type}}): update to {{version}}
 
@@ -43,7 +45,7 @@ jobs:
     - name: Update test Cask
       uses: ./
       with:
-        token: ${{secrets.COMMIT_TOKEN}}
+        token: ${{ secrets.COMMIT_TOKEN }}
         tap: mjcheetham/tap
         branch: test
         type: cask
@@ -51,6 +53,7 @@ jobs:
         version: 20.2015.${{ steps.random.outputs.random }}
         url: https://example.com/v{{version.major_minor_patch}}/test-formula.{{version}}.tar.gz
         sha256: blahblahblah${{ steps.random.outputs.random }}
+        alwaysUsePullRequest: true
         message: |
           {{name}} ({{type}}): update to {{version}}
 
