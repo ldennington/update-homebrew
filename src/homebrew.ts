@@ -93,6 +93,7 @@ export class Tap {
   }
 
   async getPackageAsync(filePath: string): Promise<Package> {
+    core.debug(`branch: ${this.branch?.name}, file: ${filePath}`);
     const file = await this.repo.getFileAsync(filePath, this.branch?.name);
     return new Package(file);
   }
