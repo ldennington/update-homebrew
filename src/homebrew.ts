@@ -103,7 +103,7 @@ export class Tap {
   }
 
   async getCaskAsync(name: string): Promise<Package> {
-    const filePath = `Casks/${name}.rb`;
+    const filePath = `Casks/g/${name}.rb`;
     return this.getPackageAsync(filePath);
   }
 
