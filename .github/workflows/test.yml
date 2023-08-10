@@ -1,65 +1,27 @@
-name: "build-test"
+name: "gcm-test"
 on: # rebuild any PRs and main branch changes
-  workflow_dispatch:
-  pull_request:
   push:
     branches:
-      - master
-      - 'releases/*'
+      - update-for-homebrew-casks
 
 jobs:
-  build: # make sure build/ci work properly
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v3
-    - run: |
-        npm install
-        npm run all
   test: # make sure the action works on a clean machine without building
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - run: echo "random=$(date +%s)" >> $GITHUB_OUTPUT
-      id: random
-    - name: Update test Formula
+    - uses: actions/checkout@v2
+    - name: Test Homebrew deployment
       uses: ./
       with:
-        token: ${{ secrets.COMMIT_TOKEN }}
-        tap: mjcheetham/tap
-        branch: test
-        name: test-formula
-        version: 2.3.4.${{ steps.random.outputs.random }}
-        sha256: blahblahblah${{ steps.random.outputs.random }}
-        message: |
-          {{name}} ({{type}}): update to {{version}}
-
-          Update the {{name}} {{type}} to version {{version}}.
-          This modifies the Ruby file {{file}}.
-
-          x = {{version.major}}
-          x.y = {{version.major_minor}}
-          x.y.z = {{version.major_minor_patch}}
-
-          That's all folks! :rocket:
-    - name: Update test Cask
-      uses: ./
-      with:
-        token: ${{ secrets.COMMIT_TOKEN }}
-        tap: mjcheetham/tap
-        branch: test
+        token: ${{ secrets.HOMEBREW_TOKEN }}
+        tap: ldennington/homebrew-cask
+        branch: master
+        name: git-credential-manager
         type: cask
-        name: test-cask
-        version: 20.2015.${{ steps.random.outputs.random }}
-        url: https://example.com/v{{version.major_minor_patch}}/test-formula.{{version}}.tar.gz
-        sha256: blahblahblah${{ steps.random.outputs.random }}
+        releaseRepo: 'ldennington/git-credential-manager'
+        releaseTag: 'v45.54'
+        releaseAsset: |
+          gcm-osx-x64-(.*)\.pkg
+          gcm-osx-arm64-(.*)\.pkg
+        alwaysUsePullRequest: true
         message: |
-          {{name}} ({{type}}): update to {{version}}
-
-          Update the {{name}} {{type}} to version {{version}}.
-          This modifies the Ruby file {{file}}.
-
-          x = {{version.major}}
-          x.y = {{version.major_minor}}
-          x.y.z = {{version.major_minor_patch}}
-
-          That's all folks! :rocket:
+          A test GCM release! :rocket:
