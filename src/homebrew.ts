@@ -17,9 +17,9 @@ export class Package {
 
       core.debug(`file path: ${this.filePath}`)
 
-      core.debug(`git blod: ${this.gitBlob}`)
+      core.debug(`git blob: ${this.gitBlob}`)
 
-      core.debug(`file path: ${this.content}`)
+      core.debug(`content: ${this.content}`)
 
     } else {
       this.filePath = pathOrGitFile;

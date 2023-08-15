@@ -1,4 +1,6 @@
+import * as core from '@actions/core';
 import { GitHub } from '@actions/github/lib/utils';
+import { countReset } from 'console';
 export type Api = InstanceType<typeof GitHub>;
 
 export class File {
@@ -74,6 +76,9 @@ export class Repository {
     this.name = name;
     this.defaultBranch = defaultBranch;
     this.canPush = canPush;
+    core.debug(`name: ${name}`)
+    core.debug(`owner: ${owner}`)
+
     this.req = { owner, repo: name };
   }
 
@@ -120,8 +125,14 @@ export class Repository {
     filePath: string,
     branch: string | undefined
   ): Promise<File> {
+    core.debug(`owner: ${this.owner}`)
+    core.debug(`name: ${this.name}`)
+    core.debug(`filePath: ${filePath}`)
+    core.debug(`branch: ${branch}`)
+
     const { data, status } = await this.api.rest.repos.getContent({
-      ...this.req,
+      owner: this.owner,
+      repo: this.name,
       path: filePath,
       ref: branch || this.defaultBranch.name
     });
@@ -135,6 +146,8 @@ export class Repository {
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const d = data as any;
+
+    core.debug(`data sha: ${d.sha}`)
 
     const content = Buffer.from(d.content, 'base64').toString();
 
@@ -150,7 +163,8 @@ export class Repository {
   ): Promise<Commit> {
     const { status, data } =
       await this.api.rest.repos.createOrUpdateFileContents({
-        ...this.req,
+        owner: 'Homebrew',
+        repo: 'homebrew-cask',
         content: Buffer.from(content).toString('base64'),
         branch,
         path: filePath,
