@@ -42271,8 +42271,6 @@ class Repository {
         this.name = name;
         this.defaultBranch = defaultBranch;
         this.canPush = canPush;
-        core.debug(`name: ${name}`);
-        core.debug(`owner: ${owner}`);
         this.req = { owner, repo: name };
     }
     static createAsync(api, owner, name) {
@@ -42293,10 +42291,6 @@ class Repository {
     }
     getFileAsync(filePath, branch) {
         return __awaiter(this, void 0, void 0, function* () {
-            core.debug(`owner: ${this.owner}`);
-            core.debug(`name: ${this.name}`);
-            core.debug(`filePath: ${filePath}`);
-            core.debug(`branch: ${branch}`);
             const { data, status } = yield this.api.rest.repos.getContent({
                 owner: this.owner,
                 repo: this.name,
@@ -42306,16 +42300,22 @@ class Repository {
             assertOk(status, `failed to download '${filePath}' @ '${branch || this.defaultBranch.name}' from '${this.owner}/${this.name}'`);
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const d = data;
-            core.debug(`data sha: ${d.sha}`);
             const content = Buffer.from(d.content, 'base64').toString();
             return new File(filePath, d.sha, content);
         });
     }
     commitFileAsync(branch, filePath, content, message, existingBlob) {
         return __awaiter(this, void 0, void 0, function* () {
+            core.debug(`owner: ${this.req.owner}`);
+            core.debug(`repo: ${this.req.repo}`);
+            core.debug(`content: ${Buffer.from(content).toString('base64')}`);
+            core.debug(`branch: ${branch}`);
+            core.debug(`path: ${filePath}`);
+            core.debug(`data sha: ${existingBlob}`);
+            core.debug(`message: ${message}`);
             const { status, data } = yield this.api.rest.repos.createOrUpdateFileContents({
-                owner: 'Homebrew',
-                repo: 'homebrew-cask',
+                owner: 'ldennington',
+                repo: this.req.repo,
                 content: Buffer.from(content).toString('base64'),
                 branch,
                 path: filePath,
@@ -42532,8 +42532,6 @@ class Tap {
         var _a;
         return __awaiter(this, void 0, void 0, function* () {
             const file = yield this.repo.getFileAsync(filePath, (_a = this.branch) === null || _a === void 0 ? void 0 : _a.name);
-            core.debug(`file path ${file.blob}`);
-            core.debug(`file path ${file.path}`);
             return new Package(file);
         });
     }
@@ -42549,7 +42547,6 @@ class Tap {
                 ? `Casks/${name[0].toLowerCase()}`
                 : 'Casks';
             const filePath = `${prefix}/${name}.rb`;
-            core.debug(`file path ${filePath}`);
             return this.getPackageAsync(filePath);
         });
     }
@@ -42586,11 +42583,6 @@ class Tap {
             }
             // Create the commit
             core.debug('creating commit...');
-            core.debug(`commitRepo: ${commitRepo.name}`);
-            core.debug(`commitRepoOwner: ${commitRepo.owner}`);
-            core.debug(`commitRepoReq: ${commitRepo.req}`);
-            core.debug(`commitBranch: ${commitBranch.name}`);
-            core.debug(`owner: ${options.forkOwner}`);
             const commit = yield this.repo.commitFileAsync(commitBranch.name, options.package.filePath, options.package.content, options.message, options.package.gitBlob);
             if (!createPull) {
                 return commit;

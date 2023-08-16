@@ -101,9 +101,6 @@ export class Tap {
 
   async getPackageAsync(filePath: string): Promise<Package> {
     const file = await this.repo.getFileAsync(filePath, this.branch?.name);
-    core.debug(`file path ${file.blob}`)
-    core.debug(`file path ${file.path}`)
-
     return new Package(file);
   }
 
@@ -118,7 +115,6 @@ export class Tap {
         ? `Casks/${name[0].toLowerCase()}`
         : 'Casks';
     const filePath = `${prefix}/${name}.rb`;
-    core.debug(`file path ${filePath}`)
     return this.getPackageAsync(filePath);
   }
 
@@ -166,11 +162,6 @@ export class Tap {
 
     // Create the commit
     core.debug('creating commit...');
-    core.debug(`commitRepo: ${commitRepo.name}`);
-    core.debug(`commitRepoOwner: ${commitRepo.owner}`);
-    core.debug(`commitRepoReq: ${commitRepo.req}`);
-    core.debug(`commitBranch: ${commitBranch.name}`);
-    core.debug(`owner: ${options.forkOwner}`);
     const commit = await this.repo.commitFileAsync(
       commitBranch.name,
       options.package.filePath,

@@ -76,9 +76,6 @@ export class Repository {
     this.name = name;
     this.defaultBranch = defaultBranch;
     this.canPush = canPush;
-    core.debug(`name: ${name}`)
-    core.debug(`owner: ${owner}`)
-
     this.req = { owner, repo: name };
   }
 
@@ -125,11 +122,6 @@ export class Repository {
     filePath: string,
     branch: string | undefined
   ): Promise<File> {
-    core.debug(`owner: ${this.owner}`)
-    core.debug(`name: ${this.name}`)
-    core.debug(`filePath: ${filePath}`)
-    core.debug(`branch: ${branch}`)
-
     const { data, status } = await this.api.rest.repos.getContent({
       owner: this.owner,
       repo: this.name,
@@ -147,8 +139,6 @@ export class Repository {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const d = data as any;
 
-    core.debug(`data sha: ${d.sha}`)
-
     const content = Buffer.from(d.content, 'base64').toString();
 
     return new File(filePath, d.sha, content);
@@ -161,10 +151,19 @@ export class Repository {
     message: string,
     existingBlob?: string
   ): Promise<Commit> {
+    core.debug(`owner: ${this.req.owner}`)
+    core.debug(`repo: ${this.req.repo}`)
+    core.debug(`content: ${Buffer.from(content).toString('base64')}`)
+    core.debug(`branch: ${branch}`)
+    core.debug(`path: ${filePath}`)
+    core.debug(`data sha: ${existingBlob}`)
+    core.debug(`message: ${message}`)
+
+
     const { status, data } =
       await this.api.rest.repos.createOrUpdateFileContents({
-        owner: 'Homebrew',
-        repo: 'homebrew-cask',
+        owner: 'ldennington',
+        repo: this.req.repo,
         content: Buffer.from(content).toString('base64'),
         branch,
         path: filePath,
